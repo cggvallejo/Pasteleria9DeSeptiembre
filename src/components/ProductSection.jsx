@@ -123,9 +123,9 @@ const ProductSection = () => {
                 <div style={{ padding: '0 1.25rem 1.25rem 1.25rem' }}>
                   <button
                     onClick={() => scrollToConcierge(product.name)}
-                    className="w-full py-2.5 px-4 rounded-xl bg-primary-pink text-accent hover:bg-accent hover:text-white transition-all duration-300 font-semibold text-[0.85rem] flex items-center justify-center gap-2 cursor-pointer border border-pink-200 shadow-xs"
+                    className="btn-concierge-order"
                   >
-                    <ShoppingBag size={16} /> Solicitud Concierge
+                    <ShoppingBag size={18} /> Solicitud Concierge
                   </button>
                 </div>
               </motion.div>

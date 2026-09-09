@@ -98,7 +98,7 @@ h1, h2, h3, h4, h5 {
   margin: 0;
 }
 
-body, p, span, li, a {
+body, p, span, li, a, button, input, select, textarea {
   font-family: var(--font-sans);
   color: var(--text-main);
   line-height: 1.6;
@@ -365,6 +365,33 @@ body, p, span, li, a {
 .btn-primary:hover {
   background: var(--text-main);
   transform: translateY(-2px);
+}
+
+.btn-concierge-order {
+  width: 100%;
+  padding: 0.85rem 1.25rem;
+  border-radius: 14px;
+  background: var(--primary-pink);
+  color: var(--accent-pink);
+  border: 1.5px solid rgba(216, 112, 147, 0.28);
+  font-family: var(--font-sans) !important;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 3px 10px rgba(216, 112, 147, 0.08);
+}
+
+.btn-concierge-order:hover {
+  background: var(--accent-pink) !important;
+  color: #ffffff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(216, 112, 147, 0.3) !important;
 }
 
 /* Gallery / Showcase */
