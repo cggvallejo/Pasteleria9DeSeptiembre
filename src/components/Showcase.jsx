@@ -16,7 +16,7 @@ const Showcase = () => {
 
   const displayedImages = filteredImages.slice(0, visibleCount);
 
-  // Close with ESC key and prevent body scroll when open
+  // Close with ESC key and navigation with Arrow keys
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
@@ -180,133 +180,109 @@ const Showcase = () => {
           </div>
         )}
 
-        {/* Studio Lightbox Modal - Optimized Size & Easy Close */}
+        {/* Luxury Product Detail Lightbox Modal */}
         <AnimatePresence>
           {selectedItem && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md"
+              className="luxury-lightbox-overlay"
               onClick={handleCloseLightbox}
-              style={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                zIndex: 9999,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '1rem'
-              }}
             >
-              {/* Floating Backdrop Close Button for Easy Return */}
-              <button
-                onClick={handleCloseLightbox}
-                className="fixed top-4 right-4 sm:top-6 sm:right-6 z-50 bg-white/90 hover:bg-white text-main p-3 rounded-full shadow-2xl transition-transform hover:scale-110 flex items-center justify-center cursor-pointer border border-pink-100"
-                title="Cerrar (Esc)"
-              >
-                <X size={22} className="text-accent" />
-              </button>
-
               <motion.div
-                initial={{ scale: 0.92, opacity: 0, y: 15 }}
+                initial={{ scale: 0.94, opacity: 0, y: 15 }}
                 animate={{ scale: 1, opacity: 1, y: 0 }}
-                exit={{ scale: 0.92, opacity: 0, y: 15 }}
+                exit={{ scale: 0.94, opacity: 0, y: 15 }}
                 transition={{ type: 'spring', damping: 28, stiffness: 350 }}
-                className="bg-white rounded-3xl overflow-hidden max-w-3xl w-full shadow-2xl relative flex flex-col md:flex-row"
+                className="luxury-lightbox-modal"
                 onClick={(e) => e.stopPropagation()}
-                style={{
-                  maxHeight: '85vh',
-                  border: '1px solid rgba(216, 112, 147, 0.25)',
-                  boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.4)'
-                }}
               >
-                {/* Left Side: HD Studio Image (Contained & Responsive) */}
-                <div 
-                  className="w-full md:w-1/2 bg-soft relative flex items-center justify-center overflow-hidden" 
-                  style={{ minHeight: '280px', maxHeight: '440px', background: '#FAF6F8' }}
-                >
-                  <img
-                    src={selectedItem.src}
-                    alt={selectedItem.title}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      maxHeight: '440px',
-                      objectFit: 'contain'
-                    }}
-                  />
+                <div className="luxury-lightbox-grid">
                   
-                  {/* Prev / Next Navigation Arrows */}
-                  <button
-                    onClick={handlePrev}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-main p-2 rounded-full shadow-md transition-all hover:scale-105"
-                    title="Anterior (Flecha izquierda)"
-                  >
-                    <ChevronLeft size={20} />
-                  </button>
-                  <button
-                    onClick={handleNext}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-main p-2 rounded-full shadow-md transition-all hover:scale-105"
-                    title="Siguiente (Flecha derecha)"
-                  >
-                    <ChevronRight size={20} />
-                  </button>
-                </div>
+                  {/* Left Column: Media with Navigation */}
+                  <div className="luxury-lightbox-media">
+                    <img
+                      src={selectedItem.src}
+                      alt={selectedItem.title}
+                    />
+                    
+                    {/* Navigation Buttons */}
+                    <button
+                      onClick={handlePrev}
+                      className="luxury-lightbox-nav-btn prev"
+                      title="Anterior (Flecha izquierda)"
+                      aria-label="Anterior"
+                    >
+                      <ChevronLeft size={22} />
+                    </button>
+                    <button
+                      onClick={handleNext}
+                      className="luxury-lightbox-nav-btn next"
+                      title="Siguiente (Flecha derecha)"
+                      aria-label="Siguiente"
+                    >
+                      <ChevronRight size={22} />
+                    </button>
+                  </div>
 
-                {/* Right Side: Details & Actions (Scrollable if small screen) */}
-                <div 
-                  className="w-full md:w-1/2 p-5 sm:p-7 flex flex-col justify-between text-left overflow-y-auto"
-                  style={{ maxHeight: '440px' }}
-                >
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="inline-block px-3 py-0.5 rounded-full text-[0.7rem] font-bold uppercase tracking-wider text-accent bg-pink-50 border border-pink-100">
-                        {selectedItem.category}
-                      </span>
+                  {/* Right Column: Editorial Product Information */}
+                  <div className="luxury-lightbox-content">
+                    <div>
+                      {/* Header with Category Badge & Close Button */}
+                      <div className="luxury-lightbox-header">
+                        <span className="luxury-category-badge">
+                          <Sparkles size={12} /> {selectedItem.category}
+                        </span>
+                        <button
+                          onClick={handleCloseLightbox}
+                          className="luxury-close-btn"
+                          title="Cerrar (Esc)"
+                          aria-label="Cerrar modal"
+                        >
+                          <X size={18} />
+                        </button>
+                      </div>
+
+                      {/* Title & Divider */}
+                      <h3 className="luxury-lightbox-title">
+                        {selectedItem.title}
+                      </h3>
+                      <div className="luxury-lightbox-divider"></div>
+                      
+                      {/* Description */}
+                      <p className="luxury-lightbox-desc">
+                        {selectedItem.description}
+                      </p>
+
+                      {/* Feature Card */}
+                      <div className="luxury-feature-card">
+                        <div className="luxury-feature-title">
+                          <Sparkles size={14} className="text-accent" /> Elaboración de Alta Repostería
+                        </div>
+                        <p className="luxury-feature-text">
+                          Cada pieza es diseñada artesanalmente bajo pedido con ingredientes nobles de origen certificado y técnicas tradicionales.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="luxury-lightbox-actions">
+                      <button
+                        onClick={() => sendWhatsAppInquiry(selectedItem.title)}
+                        className="btn-luxury-quote"
+                      >
+                        <MessageCircle size={18} /> Cotizar este Diseño
+                      </button>
                       <button
                         onClick={handleCloseLightbox}
-                        className="text-soft hover:text-accent text-xs font-semibold flex items-center gap-1 cursor-pointer transition-colors"
+                        className="btn-back-gallery"
                       >
-                        <X size={16} /> Cerrar
+                        <ArrowLeft size={14} /> Volver a la vitrina
                       </button>
                     </div>
-
-                    <h3 className="text-h2 font-serif text-main mb-2" style={{ fontSize: '1.28rem', lineHeight: '1.25' }}>
-                      {selectedItem.title}
-                    </h3>
-                    
-                    <p className="text-body text-soft leading-relaxed mb-4" style={{ fontSize: '0.86rem', opacity: 0.9 }}>
-                      {selectedItem.description}
-                    </p>
-
-                    <div className="bg-soft/70 rounded-xl p-3 mb-4 border border-pink-100/70">
-                      <div className="flex items-center gap-1.5 text-xs font-bold text-main mb-0.5">
-                        <Sparkles size={13} className="text-accent" /> Elaboración de Autor
-                      </div>
-                      <p className="text-[0.78rem] text-soft opacity-85 leading-snug">
-                        Elaborado bajo pedido con técnicas artesanales e ingredientes de origen selecto.
-                      </p>
-                    </div>
                   </div>
 
-                  <div className="flex flex-col gap-2 pt-2 border-t border-pink-50">
-                    <button
-                      onClick={() => sendWhatsAppInquiry(selectedItem.title)}
-                      className="btn-primary w-full py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-sm hover:shadow-md transition-all cursor-pointer"
-                    >
-                      <MessageCircle size={16} /> Cotizar este Diseño
-                    </button>
-                    <button
-                      onClick={handleCloseLightbox}
-                      className="w-full py-2 px-3 rounded-lg text-xs text-soft hover:text-accent font-semibold transition-colors text-center flex items-center justify-center gap-1 cursor-pointer"
-                    >
-                      <ArrowLeft size={14} /> Volver a la vitrina
-                    </button>
-                  </div>
                 </div>
               </motion.div>
             </motion.div>
