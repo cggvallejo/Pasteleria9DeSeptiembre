@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Eye, X, ChevronLeft, ChevronRight, MessageCircle, Sparkles, Heart } from 'lucide-react';
+import { Eye, X, ChevronLeft, ChevronRight, MessageCircle, Sparkles, ArrowLeft } from 'lucide-react';
 import { galleryData } from '../data/galleryData';
 
 const categories = ['Todos', 'Pasteles', 'Roles', 'Cupcakes', 'Tartas', 'Petit Fours'];
@@ -16,6 +16,31 @@ const Showcase = () => {
 
   const displayedImages = filteredImages.slice(0, visibleCount);
 
+  // Close with ESC key and prevent body scroll when open
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setSelectedItem(null);
+      } else if (e.key === 'ArrowRight' && selectedItem) {
+        handleNext(e);
+      } else if (e.key === 'ArrowLeft' && selectedItem) {
+        handlePrev(e);
+      }
+    };
+
+    if (selectedItem) {
+      document.body.style.overflow = 'hidden';
+      window.addEventListener('keydown', handleKeyDown);
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [selectedItem, filteredImages]);
+
   const handleOpenLightbox = (item) => {
     setSelectedItem(item);
   };
@@ -25,14 +50,16 @@ const Showcase = () => {
   };
 
   const handleNext = (e) => {
-    e.stopPropagation();
+    if (e && e.stopPropagation) e.stopPropagation();
+    if (!selectedItem) return;
     const currentIndex = filteredImages.findIndex(i => i.id === selectedItem.id);
     const nextIndex = (currentIndex + 1) % filteredImages.length;
     setSelectedItem(filteredImages[nextIndex]);
   };
 
   const handlePrev = (e) => {
-    e.stopPropagation();
+    if (e && e.stopPropagation) e.stopPropagation();
+    if (!selectedItem) return;
     const currentIndex = filteredImages.findIndex(i => i.id === selectedItem.id);
     const prevIndex = (currentIndex - 1 + filteredImages.length) % filteredImages.length;
     setSelectedItem(filteredImages[prevIndex]);
@@ -153,92 +180,131 @@ const Showcase = () => {
           </div>
         )}
 
-        {/* Studio Lightbox Modal */}
+        {/* Studio Lightbox Modal - Optimized Size & Easy Close */}
         <AnimatePresence>
           {selectedItem && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm"
+              className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md"
               onClick={handleCloseLightbox}
-              style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 9999 }}
+              style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                zIndex: 9999,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '1rem'
+              }}
             >
-              <motion.div
-                initial={{ scale: 0.9, opacity: 0, y: 20 }}
-                animate={{ scale: 1, opacity: 1, y: 0 }}
-                exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                className="bg-white rounded-3xl overflow-hidden max-w-4xl w-full max-h-[90vh] flex flex-col md:flex-row shadow-2xl relative"
-                onClick={(e) => e.stopPropagation()}
-                style={{ border: '1px solid rgba(216, 112, 147, 0.2)' }}
+              {/* Floating Backdrop Close Button for Easy Return */}
+              <button
+                onClick={handleCloseLightbox}
+                className="fixed top-4 right-4 sm:top-6 sm:right-6 z-50 bg-white/90 hover:bg-white text-main p-3 rounded-full shadow-2xl transition-transform hover:scale-110 flex items-center justify-center cursor-pointer border border-pink-100"
+                title="Cerrar (Esc)"
               >
-                {/* Close Button */}
-                <button
-                  onClick={handleCloseLightbox}
-                  className="absolute top-4 right-4 z-10 bg-white/80 hover:bg-white text-main p-2 rounded-full shadow-md transition-colors"
-                >
-                  <X size={20} />
-                </button>
+                <X size={22} className="text-accent" />
+              </button>
 
-                {/* Left Side: HD Studio Image */}
-                <div className="md:w-3/5 bg-soft relative flex items-center justify-center overflow-hidden" style={{ minHeight: '340px' }}>
+              <motion.div
+                initial={{ scale: 0.92, opacity: 0, y: 15 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.92, opacity: 0, y: 15 }}
+                transition={{ type: 'spring', damping: 28, stiffness: 350 }}
+                className="bg-white rounded-3xl overflow-hidden max-w-3xl w-full shadow-2xl relative flex flex-col md:flex-row"
+                onClick={(e) => e.stopPropagation()}
+                style={{
+                  maxHeight: '85vh',
+                  border: '1px solid rgba(216, 112, 147, 0.25)',
+                  boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.4)'
+                }}
+              >
+                {/* Left Side: HD Studio Image (Contained & Responsive) */}
+                <div 
+                  className="w-full md:w-1/2 bg-soft relative flex items-center justify-center overflow-hidden" 
+                  style={{ minHeight: '280px', maxHeight: '440px', background: '#FAF6F8' }}
+                >
                   <img
                     src={selectedItem.src}
                     alt={selectedItem.title}
-                    className="w-full h-full object-cover max-h-[500px]"
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      maxHeight: '440px',
+                      objectFit: 'contain'
+                    }}
                   />
                   
                   {/* Prev / Next Navigation Arrows */}
                   <button
                     onClick={handlePrev}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-main p-2 rounded-full shadow-md transition-colors"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-main p-2 rounded-full shadow-md transition-all hover:scale-105"
+                    title="Anterior (Flecha izquierda)"
                   >
                     <ChevronLeft size={20} />
                   </button>
                   <button
                     onClick={handleNext}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-main p-2 rounded-full shadow-md transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-main p-2 rounded-full shadow-md transition-all hover:scale-105"
+                    title="Siguiente (Flecha derecha)"
                   >
                     <ChevronRight size={20} />
                   </button>
                 </div>
 
-                {/* Right Side: Details & Actions */}
-                <div className="md:w-2/5 p-6 md:p-8 flex flex-col justify-between text-left">
+                {/* Right Side: Details & Actions (Scrollable if small screen) */}
+                <div 
+                  className="w-full md:w-1/2 p-5 sm:p-7 flex flex-col justify-between text-left overflow-y-auto"
+                  style={{ maxHeight: '440px' }}
+                >
                   <div>
-                    <span className="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-accent bg-pink-50 border border-pink-100 mb-3">
-                      {selectedItem.category}
-                    </span>
-                    <h3 className="text-h2 font-serif text-main mb-3" style={{ fontSize: '1.45rem', lineHeight: '1.2' }}>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="inline-block px-3 py-0.5 rounded-full text-[0.7rem] font-bold uppercase tracking-wider text-accent bg-pink-50 border border-pink-100">
+                        {selectedItem.category}
+                      </span>
+                      <button
+                        onClick={handleCloseLightbox}
+                        className="text-soft hover:text-accent text-xs font-semibold flex items-center gap-1 cursor-pointer transition-colors"
+                      >
+                        <X size={16} /> Cerrar
+                      </button>
+                    </div>
+
+                    <h3 className="text-h2 font-serif text-main mb-2" style={{ fontSize: '1.28rem', lineHeight: '1.25' }}>
                       {selectedItem.title}
                     </h3>
-                    <p className="text-body text-soft leading-relaxed mb-6" style={{ fontSize: '0.92rem' }}>
+                    
+                    <p className="text-body text-soft leading-relaxed mb-4" style={{ fontSize: '0.86rem', opacity: 0.9 }}>
                       {selectedItem.description}
                     </p>
 
-                    <div className="bg-soft/60 rounded-2xl p-4 mb-6 border border-pink-100/60">
-                      <div className="flex items-center gap-2 text-xs font-semibold text-main mb-1">
-                        <Sparkles size={14} className="text-accent" /> Elaboración de Autor
+                    <div className="bg-soft/70 rounded-xl p-3 mb-4 border border-pink-100/70">
+                      <div className="flex items-center gap-1.5 text-xs font-bold text-main mb-0.5">
+                        <Sparkles size={13} className="text-accent" /> Elaboración de Autor
                       </div>
-                      <p className="text-xs text-soft opacity-80 leading-normal">
-                        Cada pedido se elabora bajo encargo con ingredientes orgánicos y decoración artesanal personalizada.
+                      <p className="text-[0.78rem] text-soft opacity-85 leading-snug">
+                        Elaborado bajo pedido con técnicas artesanales e ingredientes de origen selecto.
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-3">
+                  <div className="flex flex-col gap-2 pt-2 border-t border-pink-50">
                     <button
                       onClick={() => sendWhatsAppInquiry(selectedItem.title)}
-                      className="btn-primary w-full py-3 px-5 rounded-2xl font-semibold text-sm flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all"
+                      className="btn-primary w-full py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-sm hover:shadow-md transition-all cursor-pointer"
                     >
-                      <MessageCircle size={18} /> Cotizar este Diseño
+                      <MessageCircle size={16} /> Cotizar este Diseño
                     </button>
                     <button
                       onClick={handleCloseLightbox}
-                      className="w-full py-2.5 px-4 rounded-xl text-xs text-soft hover:text-main font-medium transition-colors text-center"
+                      className="w-full py-2 px-3 rounded-lg text-xs text-soft hover:text-accent font-semibold transition-colors text-center flex items-center justify-center gap-1 cursor-pointer"
                     >
-                      Seguir explorando galería
+                      <ArrowLeft size={14} /> Volver a la vitrina
                     </button>
                   </div>
                 </div>
